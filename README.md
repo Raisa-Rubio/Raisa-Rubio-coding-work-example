@@ -6,6 +6,7 @@ The research-output can be found [here](https://lup.lub.lu.se/student-papers/sea
 
 ## Sample work
 Below some stata-tasks are shown, but the complete do.file on this stage of the study is available on this repository.
+
 After cleaning and analysing the data, more work is needed. This includes:
 
 #### i. Preparing the panel
@@ -63,6 +64,10 @@ estimates store FE
 xtreg lnPit lnincome2it lnG2it, re
 estimates store RE
 hausaman FE RE
+
+bysort regioncode: egen y_mean=mean(Pit)
+twoway scatter Pit regioncode, msymbol(circle_hollow) || connected y_mean regioncode, msymbol(diamond) ||
+, xlabel(1 "Amazonas" 2 "Ancash" 3 "Apurimac" 4 "Arequipa" 5 "Ayacucho" 6 "Cajamarca" 7 "Callao" 8 "Cusco" scheme(sj)
 ```
 - Estimating model by specifications. For example, by quintiles (income level).       
 ```stata
@@ -91,14 +96,3 @@ quietly forvalues q = 1/5 {
 }
 }
  ```
-- Performing Robustness cheks (First difference)
-```stata
-forvalues q = 1/5 {
-	reg dlnPit dlnincome2it $control i.year#c.regioncode if qt==`q', r
-  outreg2 using modelB_noFEqt2.doc, `replace' ///
-  title (Economic growth & inequality for poverty reduction, F.Difference Model) ///
-  nonotes nocons noni ctitle (Quintile, `q') keep (dlnincome2it dlnG2it) ///
-  label bdec (2) sdec(3) rdec (2) addtext(Time trend, Yes, Regional controls, Yes)
-}
-
-```
