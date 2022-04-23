@@ -5,10 +5,10 @@ This work is part of the data analyis for my second-year master thesis at Lund U
 The research-output can be found [here](https://lup.lub.lu.se/student-papers/search/publication/9056984)
 
 ## Sample work
-After cleaning and analysing the data, more work is needed. Below some stata tasks are shown but the complete do.file on this stage of the data management is available on this repository. 
+Below some stata-tasks are shown, but the complete do.file on this stage of the study is available on this repository.
+After cleaning and analysing the data, more work is needed. This includes:
 
-### i. Preparing the panel
-
+#### i. Preparing the panel
 ```stata
 clear 
 set more off
@@ -28,7 +28,7 @@ label variable Prit "Rural poverty"
 
 xtset regioncode year
 ```
-### ii. Creating main variables e.g.(annual average) growth rates 
+#### ii. Creating main variables
 ```stata
  quietly forvalues i = 1/2 {
 	gen lnincome`i'it = ln(income`i'it) lnincome2it 
@@ -40,8 +40,9 @@ quietly forvalues i = 1/2 {
 	label var dlnincome`i'it "First difference log of average regional income"
 }
 ```
-### iii. Creating auxiliary variables e.g. quintiles (by income and poverty levels) & income status
-Regions are characterised accordingly so that the estimation of the model goes by each of them. 
+#### iii. Creating auxiliary variables
+When estimating the model, the sample (regions) is resctriced by quintiles (based both on income and poverty levels) & income status
+. 
 ```stata
 tempvar flag4
 gen int qt=.
@@ -54,7 +55,7 @@ label variable qt "Distributional regional disposable income (quintiles)"
 label define qt 1 "I quintile" 2 "II quintile" 3 "III quintile" 4 "IV quintile" 5 "V quintile"
 label values qt qt
 ```
-### iv. Estimating the model
+#### iv. Estimating the model & producing journal-like tables and graphs
 - The approach. Fixed effects vs Random Effects
 ```stata
 xtreg lnPit lnincome2it lnG2it, fe
@@ -62,7 +63,6 @@ estimates store FE
 xtreg lnPit lnincome2it lnG2it, re
 estimates store RE
 hausaman FE RE
-
 ```
 - Estimating model by specifications. For example, by quintiles (income level).       
 ```stata
@@ -79,7 +79,7 @@ forvalues q = 1/5 {
  ```     
 - Providing addtional information. 
  Using `sumdist` the change in the labour income share accruing to the poorest halves of 
- the population (Table7) is provided. 
+ the population (Table 7) is provided. 
  ```stata
 quietly forvalues t = 2007/2019 { 
 quietly forvalues q = 1/5 { 
@@ -93,7 +93,6 @@ quietly forvalues q = 1/5 {
  ```
 - Performing Robustness cheks (First difference)
 ```stata
-
 forvalues q = 1/5 {
 	reg dlnPit dlnincome2it $control i.year#c.regioncode if qt==`q', r
   outreg2 using modelB_noFEqt2.doc, `replace' ///
